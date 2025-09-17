@@ -1,0 +1,1022 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Kanchana Herath — Web Designer & Developer</title>
+  <meta name="description" content="Kanchana Herath — Web Designer & Developer. BSc Computer Engineering (The Open University of Sri Lanka) & BSc Physical Science (Eastern University Sri Lanka). Accessible, modern portfolio." />
+  <meta name="author" content="Kanchana Herath" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="icon" href="https://www.svgrepo.com/show/421983/person-protection-security.svg" type="image/svg+xml">
+
+  <style>
+
+    :root{
+      --bg-light: #ffffff;
+      --surface-light: #f6f8fb;
+      --muted-light: #6b7280;
+      --accent-light: #0b0b0b; /* black accent on light */
+      --accent-2-light: #374151;
+
+      --bg-dark: #0b0b0b; /* matt black */
+      --surface-dark: #0f1113;
+      --muted-dark: #9ca3af;
+      --accent-dark: #ffffff; /* white accent in dark */
+
+      --radius: 14px;
+      --maxw: 1180px;
+      --shadow-sm: 0 8px 22px rgba(2,6,23,0.06);
+      --shadow-md: 0 18px 40px rgba(2,6,23,0.12);
+      --transition-fast: 180ms cubic-bezier(.2,.9,.3,1);
+      --transition-medium: 360ms cubic-bezier(.2,.9,.3,1);
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+
+    /* theme mapping */
+    [data-theme="light"]{
+      --bg: var(--bg-light);
+      --surface: var(--surface-light);
+      --muted: var(--muted-light);
+      --accent: var(--accent-light);
+      --accent-2: var(--accent-2-light);
+      --text: #07122b;
+      --glass: rgba(14,24,40,0.02);
+      --shadow-sm: 0 8px 22px rgba(16,24,40,0.06);
+      --shadow-md: 0 18px 40px rgba(16,24,40,0.08);
+    }
+
+    [data-theme="dark"]{
+      --bg: var(--bg-dark);
+      --surface: var(--surface-dark);
+      --muted: var(--muted-dark);
+      --accent: var(--accent-dark);
+      --accent-2: #cbd5e1;
+      --text: #e6eef6;
+      --glass: rgba(255,255,255,0.02);
+      --shadow-sm: 0 8px 22px rgba(0,0,0,0.6);
+      --shadow-md: 0 18px 40px rgba(0,0,0,0.7);
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      background: radial-gradient(circle at 10% 10%, rgba(99,102,241,0.02), transparent 15%), var(--bg);
+      color:var(--text);
+      line-height:1.45;
+      font-size:clamp(15px,1.6vw,18px);
+      padding:0;
+      transition:background var(--transition-medium), color var(--transition-medium);
+    }
+
+    /* Utility */
+    .container{max-width:var(--maxw);margin:0 auto;padding:0 1.2rem}
+    a{color:inherit}
+    img{display:block;max-width:100%}
+    .muted{color:var(--muted)}
+    button{font:inherit}
+
+    /* Skip link */
+    .skip-link{position:fixed;left:1rem;top:1rem;background:var(--surface);color:var(--text);padding:.5rem .75rem;border-radius:9px;z-index:999;transform:translateY(-140%);transition:transform .18s ease}
+    .skip-link:focus{transform:none;outline:3px solid var(--accent)}
+
+    /* Header */
+    header{
+      position:sticky;top:0;z-index:50;background:linear-gradient(180deg,transparent,transparent);
+      backdrop-filter: blur(6px);
+      box-shadow:var(--shadow-sm);
+    }
+    .nav-inner{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.9rem 0}
+    .brand{display:flex;gap:.8rem;align-items:center}
+    .logo{
+      width:54px;height:54px;border-radius:12px;display:grid;place-items:center;
+      background:linear-gradient(135deg,var(--accent),var(--accent-2));color:var(--bg);
+      font-weight:800;font-size:1.05rem;box-shadow:var(--shadow-sm);transition:transform var(--transition-medium),background var(--transition-medium)
+    }
+    .site-title{font-weight:800}
+    nav{display:flex;align-items:center;gap:1rem}
+    nav a{padding:.45rem .6rem;border-radius:10px;font-weight:700;color:var(--text);text-decoration:none;transition:background var(--transition-fast),transform var(--transition-fast)}
+    nav a:hover{background:var(--glass);transform:translateY(-3px)}
+    .cta{background:var(--accent);color:var(--bg);padding:.6rem .9rem;border-radius:10px;box-shadow:var(--shadow-md);font-weight:800}
+
+    /* Mobile nav */
+    .menu-btn{display:none;background:transparent;border:0;padding:.4rem;border-radius:8px}
+    .menu-btn:focus{outline:3px solid var(--accent)}
+
+    /* Hero */
+    .hero{display:grid;grid-template-columns:1fr 420px;gap:2rem;align-items:center;padding:4rem 0}
+    .hero-left{max-width:680px}
+    .hero h1{font-size:clamp(1.8rem,4.5vw,3.4rem);margin:.2rem 0}
+    .hero p{color:var(--muted);margin:1rem 0 1.4rem}
+    .hero-actions{display:flex;gap:.8rem;align-items:center;flex-wrap:wrap}
+    .btn{display:inline-flex;align-items:center;gap:.6rem;padding:.7rem 1rem;border-radius:12px;border:0;background:var(--accent);color:var(--bg);font-weight:800;cursor:pointer;transition:transform var(--transition-fast),box-shadow var(--transition-fast)}
+    .btn.secondary{background:transparent;border:1px solid rgba(11,22,33,0.06);color:var(--text)}
+    .btn:hover{transform:translateY(-4px);box-shadow:var(--shadow-md)}
+
+    /* Portrait card (modern masking + motion) */
+    .portrait-card{
+      background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
+      border-radius:18px;padding:1.1rem;display:flex;flex-direction:column;gap:.9rem;align-items:center;justify-content:center;box-shadow:var(--shadow-md);
+      transition:transform var(--transition-medium),box-shadow var(--transition-medium),background var(--transition-medium);
+      position:relative;overflow:visible;
+    }
+    .portrait-wrapper{
+      width:300px;height:380px;border-radius:20px;overflow:visible;display:grid;place-items:center;
+      transform-origin:center;
+      transition:transform var(--transition-medium);
+    }
+    /* Modern organic mask using SVG clip-path fallback */
+    .portrait-img{
+      width:320px;height:380px;object-fit:cover;border-radius:18px;display:block;transform:translateY(0);transition:transform 600ms cubic-bezier(.22,.9,.3,1);
+      box-shadow:0 20px 40px rgba(2,6,23,0.12);
+    }
+    .portrait-frame{
+      position:absolute;right:12px;top:-18px;transform:rotate(6deg);
+      width:80px;height:80px;border-radius:14px;background:linear-gradient(135deg,var(--accent),var(--accent-2));
+      color:var(--bg);display:grid;place-items:center;font-weight:900;font-size:1.1rem;box-shadow:var(--shadow-sm)
+    }
+    .portrait-meta{display:flex;flex-direction:column;align-items:center;gap:.2rem}
+    .role{color:var(--muted);font-weight:700}
+
+    /* Sections */
+    section{padding:3rem 0}
+    h2.section-title{font-size:1.3rem;margin-bottom:1rem;color:var(--accent)}
+    .muted-small{color:var(--muted);font-size:.95rem}
+
+    /* Projects grid */
+    .projects-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.2rem}
+    .project-card{background:var(--surface);padding:1rem;border-radius:12px;box-shadow:var(--shadow-sm);display:flex;flex-direction:column;gap:.6rem;transition:transform var(--transition-medium),box-shadow var(--transition-medium)}
+    .project-card:hover{transform:translateY(-8px);box-shadow:var(--shadow-md)}
+    .project-media{height:140px;border-radius:10px;overflow:hidden}
+    .project-media img{width:100%;height:100%;object-fit:cover}
+    .project-tags{display:flex;gap:.4rem;flex-wrap:wrap}
+    .tag{padding:.28rem .5rem;border-radius:999px;background:rgba(0,0,0,0.04);font-weight:700;font-size:.86rem}
+    .read-more{color:var(--muted);font-weight:800;text-decoration:none} /* read more gray */
+
+    /* modal backdrop */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(2,6,23,0.6);
+  display: grid;
+  place-items: center;
+  padding: 1.2rem;
+  z-index: 200;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease; /* or var(--transition-medium) */
+}
+
+/* modal inside backdrop */
+.modal {
+  background: var(--bg);
+  width: min(900px, 100%);
+  max-height: 88vh;
+  overflow: auto;
+  border-radius: 12px;
+  padding: 1.2rem;
+  box-shadow: var(--shadow-md);
+  position: relative;
+}
+
+/* show backdrop when open */
+.modal-backdrop.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* close button */
+.modal-close {
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  border: 0;
+  background: transparent;
+  font-weight: 800;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+    /* Skills */
+    .skills-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem}
+    .skill{background:var(--surface);padding:1rem;border-radius:12px;box-shadow:var(--shadow-sm)}
+    .skill .bar{height:10px;background:linear-gradient(90deg, rgba(2,6,23,0.05), rgba(2,6,23,0.02));border-radius:999px;overflow:hidden;margin-top:.6rem}
+    .skill .fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--accent),var(--accent-2));width:0%;transition:width 900ms cubic-bezier(.2,.9,.3,1)}
+
+    /* Timeline */
+    .timeline{position:relative;padding-left:1rem;border-left:3px solid var(--glass);display:flex;flex-direction:column;gap:1.2rem}
+    .timeline-item{padding-left:1rem}
+
+    /* Testimonials slider (simple) */
+    .testimonials{display:grid;grid-template-columns:1fr;gap:1rem}
+    .testimonial{background:var(--surface);padding:1rem;border-radius:12px;box-shadow:var(--shadow-sm)}
+
+    /* Contact */
+    form{display:grid;gap:.7rem;max-width:680px}
+    label{font-weight:700;font-size:.95rem}
+    input,textarea{padding:.68rem .9rem;border-radius:10px;border:1px solid rgba(2,6,23,0.06);background:transparent;color:var(--text);transition:box-shadow var(--transition-fast)}
+    input:focus,textarea:focus{outline:3px solid rgba(75,159,165,0.12);box-shadow:0 8px 24px rgba(75,159,165,0.06)}
+    textarea{min-height:140px;resize:vertical}
+
+    /* Footer */
+    footer{padding:2rem 0;color:var(--muted);text-align:center}
+
+    /* Back to top */
+    .to-top{position:fixed;right:1rem;bottom:1.2rem;background:var(--accent);color:var(--bg);padding:.6rem;border-radius:12px;border:0;box-shadow:var(--shadow-md);cursor:pointer;transform:translateY(20px);opacity:0;transition:opacity var(--transition-fast),transform var(--transition-fast);z-index:60}
+    .to-top.show{opacity:1;transform:none}
+
+      .read-more-btn {
+    background: none;
+    color: #007acc;
+    border: none;
+    cursor: pointer;
+    font-size: 0.95rem;
+    padding: 0;
+    margin-top: 6px;
+  }
+
+  .read-more-btn:hover { text-decoration: underline; }
+
+  /* slide animation using max-height. Use a large max-height so it fits variable content. */
+  .details {
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 260ms ease;
+  }
+
+  .details[hidden] { max-height: 0; }
+  .details.show {
+    max-height: 600px; /* large enough for your content */
+  }
+
+  .details p { margin: 6px 0; font-size: 0.95rem; line-height: 1.4; }
+
+    /* responsiveness */
+    @media (max-width:980px){
+      .hero{grid-template-columns:1fr;gap:1.2rem;padding:2.2rem 0}
+      .portrait-card{order:-1}
+      .menu-btn{display:inline-block}
+      nav{display:none}
+    }
+
+
+    /* respects reduced motion */
+    @media (prefers-reduced-motion: reduce){
+      *{transition:none !important}
+      .reveal{opacity:1;transform:none}
+    }
+
+    /* reveal */
+    .reveal{opacity:0;transform:translateY(10px);transition:opacity .6s var(--transition-medium),transform .6s var(--transition-medium)}
+    .reveal.visible{opacity:1;transform:none}
+
+    /* focus styles for keyboard users */
+    :focus{outline-offset:4px}
+    a:focus,button:focus,input:focus{outline:3px solid var(--accent)}
+
+
+    /*Any device screen friendly*/
+    @media (max-width: 768px) {
+  body {
+    font-size: clamp(14px, 4vw, 16px);
+    padding-bottom: 4rem; /* avoid overlap with floating buttons */
+  }
+
+  .hero {
+    text-align: center;
+    padding: 1.8rem 0;
+  }
+
+  .hero h1 {
+    font-size: clamp(1.6rem, 6vw, 2.5rem);
+  }
+
+  .hero-actions {
+    justify-content: center;
+  }
+
+  .portrait-wrapper {
+    width: 240px;
+    height: 300px;
+  }
+
+  .portrait-img {
+    width: 100%;
+    height: 100%;
+  }
+
+  nav a {
+    font-size: 0.9rem;
+    padding: 0.35rem 0.5rem;
+  }
+
+  .project-card {
+    padding: 0.8rem;
+  }
+
+  .project-media {
+    height: 120px;
+  }
+
+  .skills-grid {
+    grid-template-columns: 1fr;
+  }
+
+  form {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .logo {
+    width: 44px;
+    height: 44px;
+    font-size: 0.9rem;
+  }
+
+  .hero {
+    padding: 1.5rem 0;
+  }
+
+  .hero h1 {
+    font-size: clamp(1.4rem, 7vw, 2.1rem);
+  }
+
+  .btn {
+    padding: 0.6rem 0.8rem;
+    font-size: 0.9rem;
+  }
+
+  .portrait-wrapper {
+    width: 200px;
+    height: 260px;
+  }
+
+  .project-card {
+    font-size: 0.9rem;
+  }
+
+  .tag {
+    font-size: 0.75rem;
+    padding: 0.2rem 0.4rem;
+  }
+
+  .to-top {
+    right: 0.8rem;
+    bottom: 0.8rem;
+    padding: 0.5rem;
+    border-radius: 10px;
+  }
+}
+
+/* Touch-Friendly Adjustments */
+@media (hover: none) {
+  button, .btn, nav a, .read-more-btn {
+    min-height: 44px; /* WCAG touch target size */
+  }
+
+  .btn:hover, nav a:hover {
+    transform: none; /* avoid hover-only effects on mobile */
+  }
+}
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header role="banner" aria-label="Main header">
+    <div class="container nav-inner">
+      <div class="brand" aria-hidden>
+        <div class="logo">KH</div>
+        <div>
+          <div class="site-title">Kanchana Herath</div>
+          <div class="muted-small">Web Designer & Developer</div>
+        </div>
+      </div>
+
+      <nav role="navigation" aria-label="Primary navigation">
+        <a href="#about">About</a>
+        <a href="#education">Education</a>
+        <a href="#projects">Projects</a>
+        <a href="#skills">Skills</a>
+        <a href="#experience">Experience</a>
+        <a href="#testimonials">Testimonials</a>
+        <a href="#contact" class="cta">Contact</a>
+      </nav>
+
+      <div style="display:flex;gap:.6rem;align-items:center">
+        <button id="themeToggle" class="btn" aria-pressed="false" title="Toggle theme">🌙</button>
+        <a class="btn secondary" href="resume.pdf" download aria-label="Download resume">Resume</a>
+        <button class="menu-btn" aria-controls="primary-nav" aria-expanded="false" aria-label="Open menu">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main" class="container" tabindex="-1">
+    <!-- HERO -->
+    <section class="hero" aria-labelledby="hero-heading">
+      <div class="hero-left reveal">
+        <h1 id="hero-heading">Hi — I'm <span style="color:var(--accent)">Kanchana Herath</span></h1>
+        <div class="role">Web Designer & Developer</div>
+        <p>I build accessible, high-performance, and delightful web experiences. I hold two degrees — <strong>BSc. Computer Engineering</strong> (The Open University of Sri Lanka) and <strong>BSc. Physical Science (Computer Science major)</strong> (Eastern University Sri Lanka). I specialize in modern HTML/CSS, JavaScript, design systems, and inclusive UX.</p>
+
+        <div class="hero-actions" role="region" aria-label="Primary actions">
+          <a class="btn" href="#projects">See my work</a>
+          <a class="btn secondary" href="#contact">Get in touch</a>
+        </div>
+
+        <div style="margin-top:1rem;display:flex;gap:.5rem;flex-wrap:wrap">
+          <span class="tag">Available for hire</span>
+          <span class="tag">Based in Sri Lanka</span>
+        </div>
+
+        <div style="margin-top:1.2rem" aria-hidden>
+          <!-- Social icons -->
+          <a href="https://github.com/heratht" target="_blank" aria-label="GitHub profile" style="margin-right:.6rem;display:inline-flex;align-items:center;gap:.4rem">
+            <!-- GitHub svg -->
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden><path d="M12 .3a12 12 0 00-3.8 23.4c.6.1.8-.3.8-.6v-2.1c-3.3.7-4-1.6-4-1.6-.5-1.2-1.1-1.5-1.1-1.5-.9-.7.1-.7.1-.7 1 .1 1.6 1 1.6 1 .9 1.6 2.5 1.1 3.1.9.1-.6.4-1.1.7-1.3-2.7-.3-5.6-1.3-5.6-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.6.1-3.3 0 0 1-.3 3.3 1.2a11.4 11.4 0 016 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.7.2 3 .1 3.3.8.9 1.2 2 1.2 3.2 0 4.6-2.9 5.6-5.6 5.9.4.4.8 1.1.8 2.3v3.4c0 .3.2.7.8.6A12 12 0 0012 .3z"/></svg>
+            <span class="muted-small">GitHub</span>
+          </a>
+
+          <a href="https://linkedin.com/in/kanchana-herath-9b831a339" target="_blank" aria-label="LinkedIn profile" style="display:inline-flex;align-items:center;gap:.4rem">
+            <!-- LinkedIn svg -->
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden><path d="M20.45 20.45h-3.554v-5.57c0-1.33-.025-3.04-1.85-3.04-1.853 0-2.137 1.45-2.137 2.946v5.664H9.354V9h3.414v1.56h.05c.475-.9 1.637-1.85 3.366-1.85 3.6 0 4.266 2.368 4.266 5.45v6.29zM5.337 7.433a2.062 2.062 0 110-4.125 2.062 2.062 0 010 4.125zm1.777 13.017H3.56V9h3.554v11.45zM22.225 0H1.771C.792 0 0 .79 0 1.771v20.454C0 23.21.792 24 1.771 24h20.454C23.21 24 24 23.21 24 22.225V1.77C24 .79 23.21 0 22.225 0z"/></svg>
+            <span class="muted-small">LinkedIn</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- portrait / modern image -->
+      <aside class="portrait-card reveal" aria-label="Portrait card">
+        <div class="portrait-frame" aria-hidden>KH</div>
+
+        <div class="portrait-wrapper" id="portraitWrapper" aria-hidden>
+          <!-- 
+            Replace data-src with your image link (high-res). Example:
+            data-src="https://yourdomain.com/images/kanchana.jpg"
+            The code uses progressive lazy-loading and a mask for a modern shape.
+          -->
+          <img
+            class="portrait-img"
+            data-src="me.jpg"
+            src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='380'/%3E"
+            alt="Portrait of Kanchana Herath — Web Designer and Developer"
+            loading="lazy"
+            style="clip-path: path('M50,0 C220,0 330,60 320,200 C310,340 150,380 40,320 C-20,250 -5,150 50,0 Z');"
+          >
+        </div>
+
+        <div class="portrait-meta">
+          <div style="font-weight:900;font-size:1.1rem">Kanchana Herath</div>
+          <div class="role muted">Web Designer & Developer</div>
+          <div class="muted-small">BSc (Computer Engineering), BSc (Physical Science — CS major)</div>
+          <div style="display:flex;gap:.5rem;margin-top:.6rem">
+            <a class="btn" href="#contact">Hire me</a>
+            <a class="btn secondary" href="#projects">Projects</a>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- ABOUT -->
+    <section id="about" class="reveal">
+      <h2 class="section-title">About</h2>
+      <p class="muted-small">I design and build user-focused web interfaces that balance aesthetics with accessibility and performance. I specialize in responsive HTML/CSS, modern JavaScript, design systems, and ensuring products are inclusive to the broadest audience.</p>
+
+      <div style="display:flex;gap:1rem;margin-top:1.4rem;flex-wrap:wrap">
+        <div style="background:var(--surface);padding:1rem;border-radius:12px;box-shadow:var(--shadow-sm);max-width:420px">
+          <h3 style="margin:.2rem 0">Core strengths</h3>
+          <ul class="muted-small">
+            <li>Accessible front-end implementations (WCAG-aware)</li>
+            <li>Design systems & component libraries</li>
+            <li>Performance-first web architecture</li>
+            <li>Progressive enhancement & PWAs</li>
+          </ul>
+        </div>
+
+        <div style="background:var(--surface);padding:1rem;border-radius:12px;box-shadow:var(--shadow-sm);flex:1">
+          <h3 style="margin:.2rem 0">Tools & tech</h3>
+          <div style="display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.6rem">
+            <span class="tag">HTML</span>
+            <span class="tag">CSS (Grid/Flex)</span>
+            <span class="tag">JavaScript</span>
+            <span class="tag">React</span>
+            <span class="tag">Node</span>
+            <span class="tag">Figma</span>
+            <span class="tag">Git</span>
+            <span class="tag">A11y</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+<!-- EDUCATION -->
+<section id="education" class="reveal">
+  <h2 class="section-title">Education</h2>
+  <div class="timeline">
+
+    <div class="timeline-item">
+      <h3>BSc(Hons)Computer Engineering</h3>
+      <p>The Open University of Sri Lanka</p>
+      <span class="muted-small">Undergraduate: from 2022</span><br>
+
+      <button class="read-more-btn" aria-expanded="false" aria-controls="edu1-details">
+        Read More
+      </button>
+
+      <div id="edu1-details" class="details" hidden>
+        <p><strong>Overall GPA:</strong> Pending...</p><br>
+        <p><strong>Study Fields:</strong> Software, Hardware, Mathematics, Management & Communication, Project Work</p><br>
+        <p><strong>Software:</strong> Data Structures & Algorithms, Object-Oriented Design & Programming, Software Development & Maintenance</p>
+        <p><strong>Hardware:</strong> Microprocessors & Interfacing, Computer Architecture, Processor Design</p>
+        <p><strong>Mathematics:</strong> Engineering Mathematics, Discrete Mathematics</p>
+        <p><strong>Management & Communication:</strong> Professional & Technical Communication, Engineering Management</p>
+        <p><strong>Project Work:</strong> Final Year Undergraduate Project (Industry Collaborative)</p><br>
+
+        <a href="resultsheet1.html">See Result Sheet</a>
+      </div>
+    </div>
+
+    <div class="timeline-item">
+      <h3>BSc. Physical Science — Computer Science major</h3>
+      <p>Eastern University Sri Lanka</p>
+      <span class="muted-small">Graduated: 2025</span><br>
+
+      <button class="read-more-btn" aria-expanded="false" aria-controls="edu2-details">
+        Read More
+      </button>
+
+      <div id="edu2-details" class="details" hidden>
+        <p><strong>Overall GPA:</strong> Pending...</p><br>
+        <p><strong>PS5 Section:</strong> Mathematics I, Physics, Computer Science</p>
+        <p><strong>Key Modules:</strong> Basic Mathematics for Computing, Data Structures & Algorithms, Database Management Systems, Theory of Computation, Computer Networks</p><br>
+        <a href="resultsheet2.html">See Result Sheet</a>
+
+      </div>
+    </div>
+
+  </div>
+</section>
+
+    <!-- PROJECTS -->
+    <section id="projects" class="reveal">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:1rem">
+        <h2 class="section-title">Selected Projects</h2>
+        <div style="display:flex;gap:.6rem;align-items:center">
+          <label for="projFilter" class="muted-small" style="margin-right:.4rem">Filter:</label>
+          <select id="projFilter" aria-label="Filter projects" style="padding:.5rem;border-radius:8px">
+            <option value="all">All</option>
+            <option value="web">Web</option>
+            <option value="pwa">PWA</option>
+            <option value="design">Design</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="projects-grid" id="projectsGrid" style="margin-top:1rem">
+        <!-- Project 1 -->
+        <article class="project-card" data-type="web" tabindex="0" aria-labelledby="p1-title">
+          <div class="project-media"><img alt="Project One screenshot" src="zonotimer.jpg" loading="lazy"></div>
+          <h3 id="p1-title">Zono Timer Web App</h3>
+          <p class="muted-small">A sleek and responsive online timer app with start, pause, reset, and customizable features. Built for productivity and easy use.</p>
+          <div class="project-tags"><span class="tag">HTML</span><span class="tag">CSS</span><span class="tag">JavaScript</span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:.6rem">
+            <a href="#" class="read-more" data-modal="case1">Read more →</a>
+            <a href="https://github.com/HerathT/ZONO_Timer" aria-label="View source">GitHub Repo</a>
+          </div>
+        </article>
+
+        <!-- Project 2 -->
+        <article class="project-card" data-type="pwa" tabindex="0" aria-labelledby="p2-title">
+          <div class="project-media"><img alt="Project Two screenshot" src="nextchat.jpg" loading="lazy"></div>
+          <h3 id="p2-title">NextChat</h3>
+          <p class="muted-small"> NextChat is a futuristic web-based chat platform designed for real-time 
+          1-to-1 communication.</p>
+          <div class="project-tags">
+            <span class="tag">Node.js</span>
+            <span class="tag">Express</span>
+            <span class="tag">Socket.IO</span>
+            <span class="tag">Firebase</span>
+            <span class="tag">HTML</span>
+            <span class="tag">CSS (Glassmorphism)</span>
+            <span class="tag">JavaScript</span>
+          </div>
+
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:.6rem">
+            <a href="#" class="read-more" data-modal="case2">Read more →</a>
+            <a href="https://github.com/HerathT/NextChat">GitHub Repo</a>
+          </div>
+        </article>
+
+        <!-- Project 3 -->
+        <article class="project-card" data-type="design" tabindex="0" aria-labelledby="p3-title">
+          <div class="project-media"><img alt="Project Three screenshot" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS9zosgOBzsuAnthIota9WPcZoqOyqjSMJqYw&s" loading="lazy"></div>
+          <h3 id="p3-title">Education Platform Audit (pending)</h3>
+          <p class="muted-small">Design prototyping and accessibility audit for a learning platform.</p>
+          <div class="project-tags"><span class="tag">Design</span><span class="tag">Audit</span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:.6rem">
+            <a href="#" class="read-more" data-modal="case3">Read more →</a>
+            <a href="#">Source</a>
+          </div>
+        </article>
+
+        <!-- Project 4 -->
+        <article class="project-card" data-type="web" tabindex="0" aria-labelledby="p4-title">
+          <div class="project-media"><img alt="Project Four screenshot" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS9zosgOBzsuAnthIota9WPcZoqOyqjSMJqYw&s" loading="lazy"></div>
+          <h3 id="p4-title">E-commerce UI Kit (pending)</h3>
+          <p class="muted-small">A lightweight, accessible UI kit for e-commerce checkouts and product pages.</p>
+          <div class="project-tags"><span class="tag">UI</span><span class="tag">Performance</span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:.6rem">
+            <a href="#" class="read-more" data-modal="case4">Read more →</a>
+            <a href="#">Source</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- Modal case studies (hidden until triggered) -->
+    <div id="modalBackdrop" class="modal-backdrop" aria-hidden="true">
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <button class="modal-close" aria-label="Close modal" id="modalClose">✕</button>
+        <h3 id="modalTitle">Case study</h3>
+        <p id="modalContent" class="muted-small">Case study content will appear here.</p>
+      </div>
+    </div>
+
+    <!-- Skills -->
+    <section id="skills" class="reveal">
+      <h2 class="section-title">Skills & Tools</h2>
+      <div class="skills-grid" aria-hidden="false">
+        <div class="skill">
+          <strong>HTML & Accessibility</strong>
+          <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="95"><div class="fill" style="width:95%"></div></div>
+        </div>
+        <div class="skill">
+          <strong>CSS (Responsive, Grid)</strong>
+          <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="92"><div class="fill" style="width:92%"></div></div>
+        </div>
+        <div class="skill">
+          <strong>JavaScript</strong>
+          <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="86"><div class="fill" style="width:86%"></div></div>
+        </div>
+        <div class="skill">
+          <strong>Design Systems</strong>
+          <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="82"><div class="fill" style="width:82%"></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Experience -->
+    <section id="experience" class="reveal">
+      <h2 class="section-title">Experience</h2>
+      <div class="timeline">
+        <div class="timeline-item">
+          <h3>Freelance Web Designer & Developer</h3>
+          <p class="muted-small">Delivered modern websites, UI kits and prototypes for SMEs and startups.</p>
+          <span class="muted-small">2022 — Present</span>
+        </div>
+        <div class="timeline-item">
+          <h3>Junior Frontend Developer (Intern)</h3>
+          <p class="muted-small">Worked on UI components and accessibility improvements.</p>
+          <span class="muted-small">2021 — 2022</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section id="testimonials" class="reveal">
+      <h2 class="section-title">Testimonials</h2>
+      <div class="testimonials" id="testimonials">
+        <blockquote class="testimonial">“Kanchana’s design sensibilities transformed our web presence. Fast, thorough, and delightful to work with.” — Client A</blockquote>
+        <blockquote class="testimonial">“Technical, accessible, and reliable — highly recommended for frontend projects.” — Client B</blockquote>
+      </div>
+    </section>
+
+    <!-- Contact -->
+    <section id="contact" class="reveal" aria-labelledby="contactHeading">
+      <h2 id="contactHeading" class="section-title">Contact</h2>
+      <p class="muted-small">I’m open to freelance work, full-time roles, and collaborations. Send me a message or email me directly.</p>
+
+      <form id="contactForm" action="kanchanaherath251@gmail.com" method="POST" aria-label="Contact form">
+        <label for="name">Name</label>
+        <input id="name" name="name" required placeholder="Your full name">
+
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email" required placeholder="you@example.com">
+
+        <label for="message">Message</label>
+        <textarea id="message" name="message" required placeholder="Tell me about your project..."></textarea>
+
+        <input type="hidden" name="_subject" value="Portfolio contact from website">
+        <div style="display:flex;gap:.6rem;align-items:center">
+          <button type="submit" class="btn">Send message</button>
+          <div id="formStatus" class="muted-small" aria-live="polite"></div>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap">
+        <div>
+          <div style="font-weight:800">Kanchana Herath</div>
+          <div class="muted-small">© <span id="year"></span> — All right reserved</div>
+        </div>
+        <div style="display:flex;gap:.6rem;align-items:center">
+          <a href="https://github.com/heratht" target="_blank" aria-label="GitHub profile" title="GitHub (opens in new tab)">
+            <!-- small github icon -->
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden><path d="M12 .3a12 12 0 00-3.8 23.4c.6.1.8-.3.8-.6v-2.1c-3.3.7-4-1.6-4-1.6-.5-1.2-1.1-1.5-1.1-1.5-.9-.7.1-.7.1-.7 1 .1 1.6 1 1.6 1 .9 1.6 2.5 1.1 3.1.9.1-.6.4-1.1.7-1.3-2.7-.3-5.6-1.3-5.6-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.6.1-3.3 0 0 1-.3 3.3 1.2a11.4 11.4 0 016 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.7.2 3 .1 3.3.8.9 1.2 2 1.2 3.2 0 4.6-2.9 5.6-5.6 5.9.4.4.8 1.1.8 2.3v3.4c0 .3.2.7.8.6A12 12 0 0012 .3z"/></svg>
+          </a>
+          <a href="https://linkedin.com/in/kanchana-herath-9b831a339" target="_blank" aria-label="LinkedIn profile" title="LinkedIn (opens in new tab)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden><path d="M20.45 20.45h-3.554v-5.57c0-1.33-.025-3.04-1.85-3.04-1.853 0-2.137 1.45-2.137 2.946v5.664H9.354V9h3.414v1.56h.05c.475-.9 1.637-1.85 3.366-1.85 3.6 0 4.266 2.368 4.266 5.45v6.29zM5.337 7.433a2.062 2.062 0 110-4.125 2.062 2.062 0 010 4.125zm1.777 13.017H3.56V9h3.554v11.45zM22.225 0H1.771C.792 0 0 .79 0 1.771v20.454C0 23.21.792 24 1.771 24h20.454C23.21 24 24 23.21 24 22.225V1.77C24 .79 23.21 0 22.225 0z"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <button id="toTop" class="to-top" aria-label="Back to top">↑</button>
+
+  <!-- Modal content for 4 sample case studies (data stored here) -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script>
+    
+    // ====== Config & helpers ======
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const root = document.documentElement;
+    const savedTheme = localStorage.getItem('theme');
+    if(savedTheme){ root.setAttribute('data-theme', savedTheme) } else { root.setAttribute('data-theme','light') }
+
+    // Update theme toggle UI
+    const themeToggle = document.getElementById('themeToggle');
+    function updateThemeUI(){
+      const dark = root.getAttribute('data-theme') === 'dark';
+      themeToggle.textContent = dark ? '☀️' : '🌙';
+      themeToggle.setAttribute('aria-pressed', String(dark));
+    }
+    updateThemeUI();
+    themeToggle.addEventListener('click', ()=>{
+      const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      root.setAttribute('data-theme', next);
+      localStorage.setItem('theme', next);
+      updateThemeUI();
+    });
+
+    // Set year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // ====== Portrait lazy load & subtle parallax/motion ======
+    (function portraitInit(){
+      const img = document.querySelector('.portrait-img');
+      const wrapper = document.getElementById('portraitWrapper');
+      const src = img.getAttribute('data-src');
+      if(src){
+        const tmp = new Image();
+        tmp.src = src;
+        tmp.onload = ()=>{ img.src = src; img.style.filter = 'none'; }
+      }
+      // Parallax on mouse move (subtle), respects reduced motion
+      if(!prefersReducedMotion){
+        wrapper.addEventListener('mousemove', (e)=>{
+          const r = wrapper.getBoundingClientRect();
+          const dx = (e.clientX - (r.left + r.width/2))/r.width;
+          const dy = (e.clientY - (r.top + r.height/2))/r.height;
+          wrapper.style.transform = `rotateX(${dy*4}deg) rotateY(${dx*4}deg) translateZ(0)`;
+        });
+        wrapper.addEventListener('mouseleave', ()=> wrapper.style.transform = 'none');
+      }
+    })();
+
+    // ====== IntersectionObserver reveal ======
+    (function revealOnScroll(){
+      if(prefersReducedMotion){ document.querySelectorAll('.reveal').forEach(el=>el.classList.add('visible')); return }
+      const io = new IntersectionObserver((entries)=>{
+        entries.forEach(e=>{
+          if(e.isIntersecting){ e.target.classList.add('visible'); io.unobserve(e.target) }
+        });
+      },{threshold:0.12});
+      document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+    })();
+
+    // ====== Projects filter ======
+    (function projectsFilter(){
+      const select = document.getElementById('projFilter');
+      const grid = document.getElementById('projectsGrid');
+      select.addEventListener('change', ()=> {
+        const val = select.value;
+        grid.querySelectorAll('.project-card').forEach(card=>{
+          if(val === 'all' || card.getAttribute('data-type') === val){ card.style.display = ''; }
+          else { card.style.display = 'none'; }
+        });
+      });
+    })();
+
+    // ====== Modal case study logic ======
+/* ====== Modal case study logic ====== */
+(function projectModals() {
+  const modalBackdrop = document.getElementById('modalBackdrop');
+  const modalClose = document.getElementById('modalClose');
+  const modalTitle = document.getElementById('modalTitle');
+  const modalContent = document.getElementById('modalContent');
+
+  let lastFocused = null; // store the element that opened the modal
+
+  const CASES = {
+    case1: {
+      title: 'ZONO Timer Web App',
+      html: `<p class="muted-small">The Timer Web App, developed by Kanchana Herath, is a responsive, interactive tool designed for educational and personal time management. It combines a real-time clock, stopwatch, and countdown timer, allowing users to track current time, measure elapsed time, or set precise countdowns. Key features include theme toggling, color customization, time zone selection, and a responsive layout suitable for desktops, tablets, and mobile devices. The app offers intuitive controls, interactive buttons, and projector-friendly displays, making it ideal for classrooms, exams, or productivity tasks. Built with HTML, CSS (including glassmorphism), JavaScript, and Font Awesome, it emphasizes usability, visibility, and accuracy, though it lacks user authentication and advanced scheduling. Overall, it provides a simple, highly customizable platform for effective time tracking in various settings.
+</p>`
+    },
+    case2: {
+      title: 'NextChat',
+      html: `<p class="muted-small">NextChat is a responsive, interactive web app developed by Kanchana Herath, designed for real-time communication and collaboration. Built with Node.js, Express, Socket.IO, Firebase, HTML, CSS (Glassmorphism), and JavaScript, it allows users to send and receive messages instantly, create chat rooms, and interact seamlessly across devices. Key features include user authentication, live message updates, customizable themes, and a clean, responsive interface suitable for desktops, tablets, and mobile screens. The app emphasizes ease of use, speed, and interactivity, making it ideal for personal, educational, or small-team communication. Overall, NextChat provides a modern, highly functional platform for instant messaging and online collaboration.</p>`
+    },
+    case3: {
+      title: 'Education Platform Audit',
+      html: `<p class="muted-small">Conducted an accessibility and usability audit; produced a prioritized report and prototype fixes which improved readability and navigation for learners.</p>`
+    },
+    case4: {
+      title: 'E-commerce UI Kit',
+      html: `<p class="muted-small">Designed an accessible UI kit for product listing and checkout flows. Focused on minimalistic UX and fast interactions.</p>`
+    }
+  };
+
+    document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.read-more-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        const details = document.getElementById(btn.getAttribute('aria-controls')) || btn.nextElementSibling;
+        if (!details) return;
+
+        const isNowShown = details.classList.toggle('show');
+        // toggle the hidden attribute for accessibility
+        if (isNowShown) {
+          details.removeAttribute('hidden');
+          btn.textContent = 'Read Less';
+          btn.setAttribute('aria-expanded', 'true');
+        } else {
+          // allow the transition to finish before hiding for smoother effect
+          details.addEventListener('transitionend', function hideOnEnd(e) {
+            if (e.propertyName === 'max-height' && !details.classList.contains('show')) {
+              details.setAttribute('hidden', '');
+            }
+            details.removeEventListener('transitionend', hideOnEnd);
+          });
+          btn.textContent = 'Read More';
+          btn.setAttribute('aria-expanded', 'false');
+        }
+      });
+    });
+  });
+
+  
+
+  function openCase(id) {
+    const data = CASES[id];
+    if (!data) return;
+
+    lastFocused = document.activeElement; // store current focused element
+    modalTitle.textContent = data.title;
+    modalContent.innerHTML = data.html;
+
+    modalBackdrop.classList.add('open');
+    modalBackdrop.style.opacity = 1;
+    modalBackdrop.removeAttribute('aria-hidden');
+
+    modalClose.focus(); // focus the close button
+  }
+
+  function closeModal() {
+    modalBackdrop.style.opacity = 0;
+    modalBackdrop.classList.remove('open');
+    modalBackdrop.setAttribute('aria-hidden', 'true');
+
+    // Restore focus to the last focused element
+    if (lastFocused) lastFocused.focus();
+  }
+
+  // Open modal on click
+  document.querySelectorAll('.read-more').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const id = btn.dataset.modal;
+      openCase(id);
+    });
+  });
+
+  // Close modal on click of close button
+  modalClose.addEventListener('click', closeModal);
+
+  // Close modal when clicking outside modal content
+  modalBackdrop.addEventListener('click', (e) => {
+    if (e.target === modalBackdrop) closeModal();
+  });
+
+  // Close modal on Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modalBackdrop.classList.contains('open')) {
+      closeModal();
+    }
+  });
+})();
+
+
+    // ====== Skills animation on load ======
+    window.addEventListener('load', ()=>{
+      document.querySelectorAll('.fill').forEach(el=>{
+        const w = el.style.width || '0%';
+        el.style.width = '0%';
+        setTimeout(()=> el.style.width = w, 200);
+      });
+    });
+
+    // ====== Contact form basic UX ======
+// ====== Contact form basic UX ======
+(function contactForm(){
+  const form = document.getElementById('contactForm');
+  const status = document.getElementById('formStatus');
+  
+  // Initialize EmailJS (replace with your actual public key)
+  emailjs.init("-WWiORREwApAlx6KS");
+  
+  form.addEventListener('submit', (e)=>{
+    e.preventDefault();
+    status.textContent = 'Sending...';
+    
+    emailjs.sendForm("service_sv7sphr", "template_u34au1r", form)
+      .then(() => {
+        status.textContent = 'Message sent successfully!';
+        status.style.color = 'var(--accent)';
+        form.reset();
+      }, (error) => {
+        status.textContent = 'Failed to send — please try via email.';
+        status.style.color = 'red';
+        console.error("EmailJS error:", error);
+      });
+  });
+})();
+
+    // ====== Back to top & scroll spy ======
+    (function scrollHelpers(){
+      const toTop = document.getElementById('toTop');
+      window.addEventListener('scroll', ()=>{
+        if(window.scrollY > 400) toTop.classList.add('show'); else toTop.classList.remove('show');
+
+        // scroll spy - highlight nav (simple)
+        const sections = ['about','education','projects','skills','experience','testimonials','contact'];
+        sections.forEach(id=>{
+          const el = document.getElementById(id);
+          if(!el) return;
+          const rect = el.getBoundingClientRect();
+          const link = document.querySelector(`nav a[href="#${id}"]`);
+          if(rect.top <= 140 && rect.bottom > 140) link?.classList.add('active'); else link?.classList.remove('active');
+        });
+      });
+      toTop.addEventListener('click', ()=> window.scrollTo({top:0,behavior: prefersReducedMotion ? 'auto' : 'smooth'}));
+      // smooth internal links
+      document.querySelectorAll('a[href^="#"]').forEach(a=>{
+        a.addEventListener('click', (e)=>{
+          const href = a.getAttribute('href');
+          if(href.length>1){
+            e.preventDefault();
+            const target = document.querySelector(href);
+            if(target) target.scrollIntoView({behavior:prefersReducedMotion ? 'auto' : 'smooth',block:'start'});
+          }
+        });
+      });
+    })();
+
+    // ====== Mobile menu toggle (simple) ======
+    (function mobileMenu(){
+      const menuBtn = document.querySelector('.menu-btn');
+      const nav = document.querySelector('nav');
+      if(menuBtn){
+        menuBtn.addEventListener('click', ()=>{
+          const expanded = menuBtn.getAttribute('aria-expanded') === 'true';
+          menuBtn.setAttribute('aria-expanded', String(!expanded));
+          nav.style.display = expanded ? 'none' : 'flex';
+          nav.style.flexDirection = 'column';
+          nav.style.position = expanded ? '' : 'absolute';
+          nav.style.right = expanded ? '' : '1rem';
+          nav.style.top = expanded ? '' : '72px';
+        });
+      }
+      // close on escape
+      document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape' && nav.style.display === 'flex'){ menuBtn.click(); menuBtn.focus(); }});
+    })();
+
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>
+  (function(){
+    emailjs.init("-WWiORREwApAlx6KS"); // replace with your EmailJS Public Key
+  })();
+</script>
+
+</body>
+</html>
