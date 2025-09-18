@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Progression</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .modal1, .modalAuth {
+      display: none;
+      position: fixed;
+      top:0; left:0; right:0; bottom:0;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(5px);
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+    .modal-content1, .modalAuth-content {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      min-width: 300px;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      align-items: stretch;
+    }
+    .modal-content1 input, .modal-content1 button,
+    .modalAuth-content input, .modalAuth-content button,
+    .progress-input {
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    .modal-content1 button, .modalAuth-content button {
+      background: #ff9800;
+      border: none;
+      color: white;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .modal-content1 button:hover, .modalAuth-content button:hover {
+      background: #e68900;
+    }
+    .order-card {
+      border: 1px solid #ccc;
+      border-radius: 12px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      background: #fff;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .progress-bar-container {
+      width: 100%;
+      background: #eee;
+      border-radius: 8px;
+      overflow: hidden;
+      margin-top: 0.5rem;
+    }
+    .progress-bar {
+      height: 24px; /* Increased height */
+      text-align: center;
+      color: white;
+      line-height: 24px; /* Adjusted line height */
+      font-size: 0.8rem;
+    }
+    .error-message {
+      text-align: center;
+      font-weight: 600;
+      margin-top: 2rem;
+    }
+    .error-message a.btn {
+      margin-top: 1rem;
+      display: inline-block;
+    }
+    .editBtn {
+      margin-top: 0.5rem;
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 0.3rem 0.6rem;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .editBtn:hover {
+      background: #0056b3;
+    }
+    .progress-status {
+      margin-top: 0.5rem;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+<header>
+  <div class="container nav-inner">
+    <div class="brand">
+      <div class="logo">LIB</div>
+      <span class="site-title">Order Progression</span>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Services</a>
+      <a href="progression.html">Progression</a>
+    </nav>
+    <div style="display:flex;gap:.6rem;align-items:center">
+      <button id="themeToggle" class="btn" aria-pressed="false" title="Toggle theme">🌙</button>
+      <button id="adminLoginBtn" class="btn">Admin Login</button>
+    </div>
+  </div>
+</header>
+
+<main class="container" id="main">
+  <section>
+    <h2 class="section-title">Order Progression</h2>
+    <div id="ordersGrid"></div>
+    <div id="errorContainer"></div>
+  </section>
+</main>
+
+<!-- Modal for entering Customer ID -->
+<div id="orderIdModal" class="modal1">
+  <div class="modal-content1">
+    <h3>Enter your Customer ID</h3>
+    <input type="text" id="inputCustomerId" placeholder="Customer ID">
+    <button id="submitCustomerId">Submit</button>
+    <p id="orderStatus" class="muted-small"></p>
+  </div>
+</div>
+
+<!-- Admin Auth Modal -->
+<div id="adminAuthModal" class="modalAuth">
+  <div class="modalAuth-content">
+    <h3>Admin Login</h3>
+    <input type="email" id="adminEmail" placeholder="Email">
+    <input type="password" id="adminPassword" placeholder="Password">
+    <button id="loginBtn">Login</button>
+    <p id="loginStatus" class="muted-small"></p>
+  </div>
+</div>
+
+<footer>
+  <p>&copy; 2025 Kanchana Herath. All rights reserved.</p>
+</footer>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+import { getFirestore, collection, doc, query, where, getDocs, updateDoc } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAnbke3nd1jA2DyDZjDfXkMH_N1xO3CcAU",
+  authDomain: "my-publications-c843e.firebaseapp.com",
+  projectId: "my-publications-c843e",
+  storageBucket: "my-publications-c843e.appspot.com",
+  messagingSenderId: "97200597817",
+  appId: "1:97200597817:web:538754438c16f8dbf5d6e8"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+const ordersGrid = document.getElementById("ordersGrid");
+const orderIdModal = document.getElementById("orderIdModal");
+const submitCustomerIdBtn = document.getElementById("submitCustomerId");
+const inputCustomerId = document.getElementById("inputCustomerId");
+const orderStatus = document.getElementById("orderStatus");
+const errorContainer = document.getElementById("errorContainer");
+
+const adminLoginBtn = document.getElementById("adminLoginBtn");
+const adminAuthModal = document.getElementById("adminAuthModal");
+const loginBtn = document.getElementById("loginBtn");
+const adminEmail = document.getElementById("adminEmail");
+const adminPassword = document.getElementById("adminPassword");
+const loginStatus = document.getElementById("loginStatus");
+
+let isAdmin = false;
+
+// Function to create order card
+function createOrderCard(orderDoc) {
+  const data = orderDoc.data();
+  const card = document.createElement("div");
+  card.classList.add("order-card");
+  
+  const progressPercent = data.progression?.percent || 0;
+  const progressColor = data.progression?.color || "#ff9800";
+  const progressDate = data.progression?.date || "";
+  const progressStatus = data.progression?.status || "";
+
+  const statusColor = data.status === "stopped" ? "red" 
+                  : data.status === "working" ? "blue" 
+                  : data.status === "completed" ? "green" 
+                  : "#ff9800"; // default
+
+  card.innerHTML = `
+    <h3>${data.serviceTitle || "Service Name"}</h3>
+    <p>${data.details || "No details provided"}</p>
+    <p><strong>Status:</strong> <span style="color:${statusColor}; font-weight:600;">${data.status || "pending"}</span></p>
+    <div class="progress-bar-container">
+      <div class="progress-bar" style="width:${progressPercent}%;background:${progressColor}">
+        ${progressPercent}% ${progressDate ? `(${progressDate})` : ''}
+      </div>
+    </div>
+  `;
+
+  // Add progress status text
+  if (progressStatus) {
+    const statusElement = document.createElement("div");
+    statusElement.classList.add("progress-status");
+    statusElement.textContent = `How's it going: ${progressStatus}`;
+    card.appendChild(statusElement);
+  }
+
+  // Add edit button for admin
+  if (isAdmin) {
+    const editBtn = document.createElement("button");
+    editBtn.textContent = "Edit Progression";
+    editBtn.classList.add("editBtn");
+    editBtn.addEventListener("click", () => openEditProgressionModal(orderDoc));
+    card.appendChild(editBtn);
+  }
+
+  return card;
+}
+
+// Fetch order by customer ID
+submitCustomerIdBtn.addEventListener("click", async () => {
+  const customerId = inputCustomerId.value.trim();
+  if (!customerId) {
+    orderStatus.textContent = "Please enter a valid Customer ID.";
+    return;
+  }
+
+  try {
+    const ordersRef = collection(db, "orders");
+    const q = query(ordersRef, where("customerId","==",customerId));
+    const querySnapshot = await getDocs(q);
+
+    ordersGrid.innerHTML = "";
+    errorContainer.innerHTML = "";
+
+    if (querySnapshot.empty) {
+      errorContainer.innerHTML = `
+        <div class="error-message">
+          <p>No orders found for this Customer ID.</p>
+          <a class="btn" href="services.html">Hire a Service</a>
+        </div>
+      `;
+    } else {
+      querySnapshot.forEach(docSnap => {
+        ordersGrid.appendChild(createOrderCard(docSnap));
+      });
+    }
+
+    orderIdModal.style.display = "none";
+  } catch(err) {
+    console.error(err);
+    orderStatus.textContent = "Error accessing orders. Try again.";
+  }
+});
+
+// Admin Authentication
+adminLoginBtn.addEventListener("click", () => {
+  adminAuthModal.style.display = "flex";
+});
+
+loginBtn.addEventListener("click", async () => {
+  try {
+    const userCredential = await signInWithEmailAndPassword(auth, adminEmail.value, adminPassword.value);
+    loginStatus.textContent = "Login successful!";
+    isAdmin = true;
+    adminAuthModal.style.display = "none";
+    // Refresh order display if customer already entered ID
+    if (inputCustomerId.value.trim() !== "") submitCustomerIdBtn.click();
+  } catch(err) {
+    loginStatus.textContent = "Login failed: " + err.message;
+  }
+});
+
+// Edit progression modal
+function openEditProgressionModal(orderDoc) {
+  const modal = document.createElement("div");
+  modal.classList.add("modal1");
+  modal.innerHTML = `
+    <div class="modal-content1">
+      <h3>Edit Progression</h3>
+      <input type="number" class="progress-input" id="editPercent" placeholder="Progress %" min="0" max="100" value="${orderDoc.data().progression?.percent || 0}">
+      <input type="text" class="progress-input" id="editDate" placeholder="Date" value="${orderDoc.data().progression?.date || ''}">
+      <input type="color" class="progress-input" id="editColor" placeholder="Color" value="${orderDoc.data().progression?.color || '#ff9800'}">
+      <input type="text" class="progress-input" id="editStatus" placeholder="How's it going" value="${orderDoc.data().progression?.status || ''}">
+      <button id="saveProgress">Save</button>
+      <button id="cancelProgress">Cancel</button>
+    </div>
+  `;
+  document.body.appendChild(modal);
+
+  modal.querySelector("#cancelProgress").addEventListener("click", () => modal.remove());
+
+  modal.querySelector("#saveProgress").addEventListener("click", async () => {
+    const percent = parseInt(modal.querySelector("#editPercent").value) || 0;
+    const date = modal.querySelector("#editDate").value || '';
+    const color = modal.querySelector("#editColor").value || '#ff9800';
+    const status = modal.querySelector("#editStatus").value || '';
+
+    await updateDoc(doc(db, "orders", orderDoc.id), {
+      progression: { percent, date, color, status }
+    });
+    modal.remove();
+    // Refresh displayed orders
+    submitCustomerIdBtn.click();
+  });
+
+  modal.style.display = "flex";
+}
+
+// Theme toggle
+const root = document.documentElement;
+const savedTheme = localStorage.getItem('theme');
+if(savedTheme){ root.setAttribute('data-theme', savedTheme) } else { root.setAttribute('data-theme','light') }
+
+const themeToggle = document.getElementById('themeToggle');
+function updateThemeUI(){
+  const dark = root.getAttribute('data-theme') === 'dark';
+  themeToggle.textContent = dark ? '☀️' : '🌙';
+  themeToggle.setAttribute('aria-pressed', String(dark));
+}
+updateThemeUI();
+themeToggle.addEventListener('click', ()=>{
+  const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  root.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+  updateThemeUI();
+});
+
+// Show customer ID modal on page load
+orderIdModal.style.display = "flex";
+
+</script>
+</body>
+</html>

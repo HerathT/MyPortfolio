@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Library – Articles & Publications</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Admin Modal Styling */
+    .modal1 {
+      display: none; /* Hidden by default */
+      position: fixed;
+      top:0; left:0; right:0; bottom:0;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(5px);
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+    .modal-content1 {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      min-width: 300px;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .modal-content1 input, .modal-content1 button {
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    .modal-content1 button {
+      background: #ff9800;
+      border: none;
+      color: white;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .modal-content1 button:hover {
+      background: #e68900;
+    }
+    .blur {
+      filter: blur(5px);
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to content</a>
+
+  <!-- Header -->
+  <header>
+    <div class="container nav-inner">
+      <div class="brand">
+        <div class="logo">LIB</div>
+        <span class="site-title">My Publications</span>
+      </div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="index.html#about">About</a>
+        <a href="index.html#education">Education</a>
+        <a href="index.html#projects">Projects</a>
+        <a href="index.html#skills">Skills</a>
+        <a href="index.html#experience">Experience</a>
+        <a href="index.html#testimonials">Testimonials</a>
+        <a href="index.html#contact" class="cta">Contact</a>
+      </nav>
+
+      <div style="display:flex;gap:.6rem;align-items:center">
+        <button id="themeToggle" class="btn" aria-pressed="false" title="Toggle theme">🌙</button>
+        <a class="btn secondary" href="resume.pdf" download aria-label="Download resume">Resume</a>
+        <button class="menu-btn" aria-controls="primary-nav" aria-expanded="false" aria-label="Open menu">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero container">
+    <div class="hero-left">
+      <h1>My Articles & Publications</h1>
+      <p class="muted">Browse my published work, research papers, and articles. Click "Read More" to open each publication as a PDF in your browser.</p>
+    </div>
+  </section>
+
+  <!-- Main content -->
+  <main id="main" class="container">
+    <!-- Library Section -->
+    <section>
+      <h2 class="section-title">Library</h2>
+      <div id="libraryGrid" class="projects-grid"></div>
+    </section>
+
+    <!-- Reflectives Section -->
+    <section>
+      <h2 class="section-title">Publications about Spirituality and Consciousness (Reflectives)</h2>
+      <div id="reflectivesGrid" class="projects-grid"></div>
+    </section>
+
+    <!-- Admin Panel -->
+    <section>
+      <h2 class="section-title">Admin Panel</h2>
+      <button id="showAuthModal" class="btn">Authenticate Admin</button>
+
+      <!-- Admin Form (hidden by default) -->
+      <form id="adminForm" style="display:none; flex-direction:column; gap:0.6rem; max-width:600px;">
+        <input type="text" placeholder="Title" id="pubTitle" required>
+        <textarea placeholder="Description" id="pubDesc" required></textarea>
+        <select id="pubCategory">
+          <option value="library">Library</option>
+          <option value="reflectives">Reflectives</option>
+        </select>
+        <input type="url" placeholder="Image URL" id="pubImage" required>
+        <input type="url" placeholder="PDF URL" id="pubPdf" required>
+        <button type="submit" class="btn">Add Publication</button>
+      </form>
+    </section>
+  </main>
+
+  <!-- Admin Authentication Modal -->
+  <div id="authModal" class="modal1">
+    <div class="modal-content1">
+      <h3>Admin Login</h3>
+      <input type="email" id="adminEmail" placeholder="Email">
+      <input type="password" id="adminPassword" placeholder="Password">
+      <button id="loginBtn">Login</button>
+      <p id="loginStatus" class="muted-small"></p>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2025 Kanchana Herath. All rights reserved.</p>
+  </footer>
+
+  <!-- Back to top -->
+  <button class="to-top" id="toTop">↑</button>
+
+  <script type="module">
+    // Firebase imports
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+    import { getFirestore, collection, onSnapshot, addDoc } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAnbke3nd1jA2DyDZjDfXkMH_N1xO3CcAU",
+      authDomain: "my-publications-c843e.firebaseapp.com",
+      projectId: "my-publications-c843e",
+      storageBucket: "my-publications-c843e.firebasestorage.app",
+      messagingSenderId: "97200597817",
+      appId: "1:97200597817:web:538754438c16f8dbf5d6e8"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    const libraryGrid = document.getElementById("libraryGrid");
+    const reflectivesGrid = document.getElementById("reflectivesGrid");
+    const adminForm = document.getElementById("adminForm");
+
+    // Show publications in real-time
+    onSnapshot(collection(db, "publications"), (snapshot) => {
+      libraryGrid.innerHTML = "";
+      reflectivesGrid.innerHTML = "";
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        const card = `
+          <div class="project-card">
+            <div class="project-media">
+              <img src="${data.image}" alt="${data.title} Cover">
+            </div>
+            <h3>${data.title}</h3>
+            <p class="muted-small">${data.description}</p>
+            <a href="${data.pdf}">Full Article</a>
+          </div>
+        `;
+        if (data.category === "library") libraryGrid.insertAdjacentHTML("beforeend", card);
+        else reflectivesGrid.insertAdjacentHTML("beforeend", card);
+      });
+    });
+
+    // Admin authentication modal logic
+    const authModal = document.getElementById("authModal");
+    const showAuthBtn = document.getElementById("showAuthModal");
+    const loginBtn = document.getElementById("loginBtn");
+    const loginStatus = document.getElementById("loginStatus");
+    const mainContent = document.getElementById("main");
+
+    showAuthBtn.addEventListener("click", () => {
+      authModal.style.display = "flex";
+      mainContent.classList.add("blur");
+    });
+
+    loginBtn.addEventListener("click", async () => {
+      const email = document.getElementById("adminEmail").value;
+      const password = document.getElementById("adminPassword").value;
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+        loginStatus.textContent = "Login successful! Admin access granted.";
+        authModal.style.display = "none";
+        mainContent.classList.remove("blur");
+      } catch (err) {
+        loginStatus.textContent = "Login failed: " + err.message;
+      }
+    });
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) adminForm.style.display = "flex";
+      else adminForm.style.display = "none";
+    });
+
+    // Add publication
+adminForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const title = document.getElementById("pubTitle").value;
+  const description = document.getElementById("pubDesc").value;
+  const category = document.getElementById("pubCategory").value;
+  const image = document.getElementById("pubImage").value;
+  const pdf = document.getElementById("pubPdf").value;
+
+  try {
+    await addDoc(collection(db, "publications"), { title, description, category, image, pdf });
+    adminForm.reset();
+
+    // Show success popup
+    const popup = document.getElementById("successPopup");
+    popup.style.display = "block";
+    setTimeout(() => {
+      popup.style.display = "none";
+    }, 3000); // Hide after 3 seconds
+  } catch (err) {
+    console.error("Error adding publication:", err);
+  }
+});
+
+
+    // Back to top button
+    const toTop = document.getElementById('toTop');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 200) toTop.classList.add('show');
+      else toTop.classList.remove('show');
+    });
+    toTop.addEventListener('click', () => window.scrollTo({top:0, behavior:'smooth'}));
+  
+   // ====== Config & helpers ======
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const root = document.documentElement;
+    const savedTheme = localStorage.getItem('theme');
+    if(savedTheme){ root.setAttribute('data-theme', savedTheme) } else { root.setAttribute('data-theme','light') }
+
+    // Update theme toggle UI
+    const themeToggle = document.getElementById('themeToggle');
+    function updateThemeUI(){
+      const dark = root.getAttribute('data-theme') === 'dark';
+      themeToggle.textContent = dark ? '☀️' : '🌙';
+      themeToggle.setAttribute('aria-pressed', String(dark));
+    }
+    updateThemeUI();
+    themeToggle.addEventListener('click', ()=>{
+      const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      root.setAttribute('data-theme', next);
+      localStorage.setItem('theme', next);
+      updateThemeUI();
+    });
+  
+  </script>
+
+  <!-- Add this inside <body> just before </body> -->
+<div id="successPopup" style="
+  display:none;
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: #4CAF50;
+  color: white;
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  z-index: 10000;
+  font-weight: bold;
+">
+  &#10003; Successfully Published!
+</div>
+
+</body>
+</html>

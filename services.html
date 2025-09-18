@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Services – Hire & Buy</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Hire Modal Styling (matches previous theme) */
+    .modal1 {
+      display: none;
+      position: fixed;
+      top:0; left:0; right:0; bottom:0;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(5px);
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+    .modal-content1 {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      min-width: 300px;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .modal-content1 input, .modal-content1 textarea, .modal-content1 button, .modal-content1 select {
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    .modal-content1 button {
+      background: #ff9800;
+      border: none;
+      color: white;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .modal-content1 button:hover {
+      background: #e68900;
+    }
+    .blur {
+      filter: blur(5px);
+      pointer-events: none;
+    }
+    /* Orders dropdown */
+    #ordersDropdown {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      border: 1px solid #ccc;
+      border-radius: 12px;
+      max-height: 80vh;
+      overflow-y: auto;
+      width: 90%;
+      max-width: 400px;
+      z-index: 10000;
+      padding: 1rem;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+    .order-card {
+      border-bottom: 1px solid #ccc;
+      padding: 0.5rem 0;
+    }
+    .order-card .details { display: none; margin-top: 0.5rem; }
+    .orders-badge {
+      display: inline-block;
+      background: red;
+      color: white;
+      border-radius: 50%;
+      padding: 0.2rem 0.6rem;
+      font-size: 0.8rem;
+      vertical-align: top;
+      margin-left: 0.5rem;
+    }
+    .acceptBtn { float: right; }
+    /* Admin section styling */
+    #adminSection {
+      position: relative;
+    }
+    #ordersContainer {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      background: white;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 1rem;
+      width: 300px;
+      max-height: 400px;
+      overflow-y: auto;
+      z-index: 1000;
+      display: none;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    /* Order Details Modal */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(2,6,23,0.6);
+      display: grid;
+      place-items: center;
+      z-index: 200;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    .modal-backdrop.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .modal {
+      background: var(--bg);
+      width: min(600px, 90%);
+      max-height: 80vh;
+      overflow-y: auto;
+      border-radius: 12px;
+      padding: 1.5rem;
+      position: relative;
+    }
+    .modal-close {
+      position: absolute;
+      right: 12px;
+      top: 12px;
+      border: 0;
+      background: transparent;
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--muted);
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container nav-inner">
+      <div class="brand">
+        <div class="logo">LIB</div>
+        <span class="site-title">My Services</span>
+      </div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="index.html#education">Education</a>
+        <a href="index.html#projects">Projects</a>
+        <a href="index.html#skills">Skills</a>
+        <a href="index.html#experience">Experience</a>
+        <a href="index.html#testimonials">Testimonials</a>
+        <a href="index.html#contact" class="cta">Contact</a>
+        <a href="progression.html">Progression</a>
+      </nav>
+
+      <div style="display:flex;gap:.6rem;align-items:center; position:relative;">
+        <button id="themeToggle" class="btn" aria-pressed="false" title="Toggle theme">🌙</button>
+        <a class="btn secondary" href="resume.pdf" download aria-label="Download resume">Resume</a>
+      </div>
+    </div>
+  </header>
+
+  <section class="hero container">
+    <div class="hero-left">
+      <h1>Our Services</h1>
+      <p class="muted">Browse the services I provide. Click "Hire" to submit your request and proceed to payment.</p>
+    </div>
+  </section>
+
+  <main id="main" class="container">
+    <section>
+      <h2 class="section-title">Services</h2>
+      <div id="servicesGrid" class="projects-grid"></div>
+    </section>
+
+    <section id="adminSection">
+        <button class="menu-btn" aria-controls="primary-nav" aria-expanded="false" aria-label="Open menu">☰</button>
+        <button id="showAuthModal" class="btn">Authenticate Admin</button>
+        <span id="ordersBadge" class="orders-badge" style="display: none;">0</span>
+        <div id="ordersContainer"></div>
+    </section>
+
+    <section>
+      <h2 class="section-title">Admin Panel</h2>
+      <form id="adminForm" style="display:none; flex-direction:column; gap:0.6rem; max-width:600px;">
+        <input type="text" placeholder="Service Title" id="serviceTitle" required>
+        <textarea placeholder="Description" id="serviceDesc" required></textarea>
+        <input type="url" placeholder="Image URL" id="serviceImage" required>
+        <input type="number" placeholder="Price ($)" id="servicePrice" required>
+        <button type="submit" class="btn">Add Service</button>
+      </form>
+    </section>
+  </main>
+
+  <div id="authModal" class="modal1">
+    <div class="modal-content1">
+      <h3>Admin Login</h3>
+      <input type="email" id="adminEmail" placeholder="Email">
+      <input type="password" id="adminPassword" placeholder="Password">
+      <button id="loginBtn">Login</button>
+      <p id="loginStatus" class="muted-small"></p>
+    </div>
+  </div>
+
+  <!-- Order Details Modal -->
+  <div id="orderModal" class="modal-backdrop">
+    <div class="modal">
+      <button class="modal-close" id="closeOrderModal">&times;</button>
+      <h3>Order Details</h3>
+      <div id="orderModalContent"></div>
+    </div>
+  </div>
+  
+  <footer>
+    <p>&copy; 2025 Kanchana Herath. All rights reserved.</p>
+  </footer>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+import { getFirestore, collection, query, where, orderBy, limit, getDocs, onSnapshot, addDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAnbke3nd1jA2DyDZjDfXkMH_N1xO3CcAU",
+  authDomain: "my-publications-c843e.firebaseapp.com",
+  projectId: "my-publications-c843e",
+  storageBucket: "my-publications-c843e.appspot.com",
+  messagingSenderId: "97200597817",
+  appId: "1:97200597817:web:538754438c16f8dbf5d6e8"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+const servicesGrid = document.getElementById("servicesGrid");
+const showAuthBtn = document.getElementById("showAuthModal");
+const loginBtn = document.getElementById("loginBtn");
+const adminForm = document.getElementById("adminForm");
+const loginStatus = document.getElementById("loginStatus");
+const mainContent = document.getElementById("main");
+const ordersBadge = document.getElementById("ordersBadge");
+const ordersContainer = document.getElementById("ordersContainer");
+const orderModal = document.getElementById("orderModal");
+const orderModalContent = document.getElementById("orderModalContent");
+
+// Fetch services in real-time
+onSnapshot(collection(db, "services"), (snapshot) => {
+  servicesGrid.innerHTML = "";
+  snapshot.forEach(docSnap => {
+    const data = docSnap.data();
+    const card = document.createElement("div");
+    card.classList.add("project-card");
+    card.innerHTML = `
+      <div class="project-media">
+        <img src="${data.image}" alt="${data.title}">
+      </div>
+      <h3>${data.title}</h3>
+      <p class="muted-small">${data.description}</p>
+      <button class="btn hireBtn">Hire</button>
+    `;
+    card.querySelector(".hireBtn").addEventListener("click", async () => {
+      let inputCustomerId = prompt("Enter your Customer ID (if you have one) or leave blank for a new order:");
+      const ordersRef = collection(db, "orders");
+      if (inputCustomerId && inputCustomerId.trim() !== "") {
+        try {
+          const q = query(ordersRef, where("customerId","==",inputCustomerId.trim()), orderBy("createdAt","desc"), limit(1));
+          const querySnapshot = await getDocs(q);
+          if (!querySnapshot.empty) {
+            const lastOrder = querySnapshot.docs[0].data();
+            const lastStep = lastOrder.lastStepCompleted || "details";
+            if (lastOrder.status === "accepted") {
+              window.location.href = `customer.html?customerId=${inputCustomerId}&step=payment&serviceId=${docSnap.id}&serviceTitle=${data.title}&servicePrice=${data.price}`;
+              return;
+            } else if (lastStep === "confirm" || lastOrder.status === "pending") {
+              window.location.href = `customer.html?customerId=${inputCustomerId}&serviceId=${docSnap.id}&serviceTitle=${data.title}&servicePrice=${data.price}`;
+              return;
+            }
+          } else {
+            alert("Customer ID not found. A new order will be created.");
+            inputCustomerId = null;
+          }
+        } catch(err) {
+          console.error("Error checking customer ID:", err);
+          alert("Failed to check your customer ID. Proceeding as new order.");
+          inputCustomerId = null;
+        }
+      }
+      const params = new URLSearchParams({
+        serviceId: docSnap.id,
+        serviceTitle: data.title,
+        servicePrice: data.price
+      });
+      if (inputCustomerId) params.append("customerId", inputCustomerId);
+      window.location.href = `customer.html?${params.toString()}`;
+    });
+    servicesGrid.appendChild(card);
+  });
+});
+
+// Admin authentication
+showAuthBtn.addEventListener("click", () => {
+  const authModal = document.getElementById("authModal");
+  authModal.style.display = "flex";
+  mainContent.classList.add("blur");
+});
+loginBtn.addEventListener("click", async () => {
+  const email = document.getElementById("adminEmail").value;
+  const password = document.getElementById("adminPassword").value;
+  const authModal = document.getElementById("authModal");
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+    loginStatus.textContent = "Login successful!";
+    authModal.style.display = "none";
+    mainContent.classList.remove("blur");
+  } catch(err) {
+    loginStatus.textContent = "Login failed: " + err.message;
+  }
+});
+
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    adminForm.style.display = "flex";
+    loadOrders();
+  } else {
+    adminForm.style.display = "none";
+  }
+});
+
+// Add new service
+adminForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const title = document.getElementById("serviceTitle").value;
+  const description = document.getElementById("serviceDesc").value;
+  const image = document.getElementById("serviceImage").value;
+  const price = parseFloat(document.getElementById("servicePrice").value);
+  try {
+    await addDoc(collection(db, "services"), { title, description, image, price });
+    adminForm.reset();
+    alert("Service successfully added!");
+  } catch (err) {
+    console.error("Error adding service:", err);
+  }
+});
+
+// Load and display orders (Admin)
+function loadOrders() {
+  onSnapshot(collection(db, "orders"), snapshot => {
+    let pendingCount = 0;
+    ordersContainer.innerHTML = "";
+    snapshot.forEach(docSnap => {
+      const data = docSnap.data();
+      if (data.status === "pending") {
+        pendingCount++;
+        const orderCard = document.createElement("div");
+        orderCard.classList.add("order-card");
+        orderCard.innerHTML = `
+          <strong style="cursor:pointer; display:block;">${data.name}</strong>
+          <button class="btn acceptBtn">Accept</button>
+        `;
+        // Open modal on click
+        orderCard.querySelector("strong").addEventListener("click", () => {
+          orderModalContent.innerHTML = `
+            <p><strong>Name:</strong> ${data.name}</p>
+            <p><strong>Email:</strong> ${data.email}</p>
+            <p><strong>Details:</strong> ${data.details}</p>
+            <p><strong>Service:</strong> ${data.serviceTitle}</p>
+            <p><strong>Price:</strong> $${data.servicePrice}</p>
+            <p><strong>Customer ID:</strong> ${data.customerId}</p>
+            <p><strong>Status:</strong> ${data.status}</p>
+            <p><strong>Created At:</strong> ${data.createdAt?.toDate ? data.createdAt.toDate().toLocaleString() : ''}</p>
+          `;
+          orderModal.classList.add("open");
+        });
+        // Accept order
+        orderCard.querySelector(".acceptBtn").addEventListener("click", async () => {
+          await updateDoc(doc(db, "orders", docSnap.id), { status: "accepted" });
+          alert("Order accepted! Customer can now continue to payment.");
+        });
+        ordersContainer.appendChild(orderCard);
+      }
+    });
+    if (pendingCount > 0) {
+      ordersBadge.style.display = "inline-block";
+      ordersBadge.textContent = pendingCount;
+    } else {
+      ordersBadge.style.display = "none";
+    }
+  });
+}
+
+// Toggle orders container
+ordersBadge.addEventListener("click", (e) => {
+  e.stopPropagation();
+  ordersContainer.style.display = ordersContainer.style.display === "block" ? "none" : "block";
+});
+document.addEventListener("click", (e) => {
+  if (!ordersContainer.contains(e.target) && e.target !== ordersBadge) {
+    ordersContainer.style.display = "none";
+  }
+});
+
+// Close modal
+document.getElementById("closeOrderModal").addEventListener("click", () => {
+  orderModal.classList.remove("open");
+});
+document.getElementById("orderModal").addEventListener("click", e => {
+  if (e.target.id === "orderModal") orderModal.classList.remove("open");
+});
+
+// Theme toggle
+const root = document.documentElement;
+const savedTheme = localStorage.getItem('theme');
+root.setAttribute('data-theme', savedTheme || 'light');
+const themeToggle = document.getElementById('themeToggle');
+function updateThemeUI(){
+  const dark = root.getAttribute('data-theme') === 'dark';
+  themeToggle.textContent = dark ? '☀️' : '🌙';
+  themeToggle.setAttribute('aria-pressed', String(dark));
+}
+updateThemeUI();
+themeToggle.addEventListener('click', ()=> {
+  const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  root.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+  updateThemeUI();
+});
+
+</script>
+
+</body>
+</html>

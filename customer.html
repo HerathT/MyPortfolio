@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Customer Details - Hire Service</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .container { max-width: 900px; margin: 0 auto; padding: 1rem; }
+    .btn { padding:0.5rem 1rem; border:none; background:#000000; color:white; border-radius:6px; cursor:pointer;}
+    .btn:hover { background:#111;}
+    .btn:disabled { background:#ccc; cursor:not-allowed;}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container nav-inner">
+      <div class="brand"><div class="logo">LIB</div><span class="site-title">Customer Orders</span></div>
+      <nav><a href="services.html">Services</a></nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section id="customerFormSection">
+      <h2>Enter Your Details</h2>
+      <form id="customerForm" style="display:flex; flex-direction:column; gap:0.6rem;">
+        <input type="text" id="clientName" placeholder="Your Name" required>
+        <input type="email" id="clientEmail" placeholder="Your Email" required>
+        <textarea id="clientDetails" placeholder="Provide complete details regarding the order. For later use please save my contact number and reach me via whatsapp (0725434820)"></textarea>
+        <p>Payment option not developed yet. Please contact me via whatsapp (0725434820) to continue the order</p>
+        <p>After fill above details, click below button</p>
+        <button type="submit" class="btn">Confirm Order</button>
+      </form>
+    </section>
+
+    <section id="confirmOrderSection" style="display:none;">
+      <h2>Confirm Your Order</h2>
+      <p id="serviceInfo"></p>
+      <p id="customerIdInfo" style="color:blue;"></p>
+      <button id="confirmBtn" class="btn">Confirm Order (Waiting Admin Approval)</button>
+      <p id="statusMessage" style="color:green;"></p>
+    </section>
+
+    <section id="paymentSection" style="display:none;">
+      <h2>Payment</h2>
+      <p>Your order has been accepted. Proceed with payment.</p>
+      <button id="paymentBtn" class="btn">Proceed to Payment</button>
+    </section>
+  </main>
+
+  <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+  import { getFirestore, collection, query, where, orderBy, limit, getDocs, Timestamp, addDoc, doc, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAnbke3nd1jA2DyDZjDfXkMH_N1xO3CcAU",
+    authDomain: "my-publications-c843e.firebaseapp.com",
+    projectId: "my-publications-c843e",
+    storageBucket: "my-publications-c843e.appspot.com",
+    messagingSenderId: "97200597817",
+    appId: "1:97200597817:web:538754438c16f8dbf5d6e8"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const customerId = urlParams.get('customerId');
+  const serviceId = urlParams.get('serviceId');
+  const serviceTitle = urlParams.get('serviceTitle');
+  const servicePrice = urlParams.get('servicePrice');
+  const step = urlParams.get('step');
+
+  const customerForm = document.getElementById("customerForm");
+  const customerFormSection = document.getElementById("customerFormSection");
+  const confirmOrderSection = document.getElementById("confirmOrderSection");
+  const paymentSection = document.getElementById("paymentSection");
+  const serviceInfo = document.getElementById("serviceInfo");
+  const customerIdInfo = document.getElementById("customerIdInfo");
+  const confirmBtn = document.getElementById("confirmBtn");
+  const statusMessage = document.getElementById("statusMessage");
+  const paymentBtn = document.getElementById("paymentBtn");
+
+  function generateCustomerId() {
+    return 'CUST-' + Math.random().toString(36).substring(2, 10).toUpperCase() + 
+           '-' + Date.now().toString(36).substring(4);
+  }
+
+  async function checkLastOrder(custId) {
+    try {
+      const ordersRef = collection(db, "orders");
+      const q = query(
+        ordersRef,
+        where("customerId", "==", custId),
+        orderBy("createdAt", "desc"),
+        limit(1)
+      );
+      const querySnapshot = await getDocs(q);
+
+      if (!querySnapshot.empty) {
+        const lastOrder = querySnapshot.docs[0].data();
+        const orderDocId = querySnapshot.docs[0].id;
+
+        const lastStep = lastOrder.lastStepCompleted || "details";
+
+        if (lastOrder.status === "accepted") {
+          // Redirect to last step
+          if (lastStep === "payment") {
+            customerFormSection.style.display = "none";
+            confirmOrderSection.style.display = "none";
+            paymentSection.style.display = "block";
+          } else if (lastStep === "confirmation") {
+            customerFormSection.style.display = "none";
+            confirmOrderSection.style.display = "block";
+            paymentSection.style.display = "none";
+          }
+          customerIdInfo.textContent = `Your Customer ID: ${custId}`;
+          return true;
+        } else {
+          // Pending order
+          customerFormSection.style.display = "none";
+          confirmOrderSection.style.display = "block";
+          paymentSection.style.display = "none";
+          serviceInfo.textContent = `Service: ${lastOrder.serviceTitle} | Price: $${lastOrder.servicePrice}`;
+          customerIdInfo.textContent = `Your Customer ID: ${custId}`;
+          confirmBtn.disabled = true;
+          statusMessage.textContent = "Your order is pending admin approval.";
+          return true;
+        }
+      } else {
+        return false;
+      }
+    } catch (err) {
+      console.error("Error checking last order:", err);
+      statusMessage.textContent = "Error checking your last order. Please try again later.";
+      return false;
+    }
+  }
+
+  window.addEventListener('load', async () => {
+    serviceInfo.textContent = `Service: ${serviceTitle} | Price: $${servicePrice}`;
+
+    if (step === 'payment') {
+      paymentSection.style.display = 'block';
+      customerFormSection.style.display = 'none';
+      confirmOrderSection.style.display = 'none';
+      return;
+    }
+
+    if (customerId) {
+      const hasPreviousOrder = await checkLastOrder(customerId);
+      if (!hasPreviousOrder) {
+        customerFormSection.style.display = "block";
+        customerIdInfo.textContent = `Your Customer ID: ${customerId}`;
+      }
+    } else {
+      customerFormSection.style.display = "block";
+    }
+  });
+
+  customerForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const finalCustomerId = customerId || generateCustomerId();
+    const customerData = {
+      name: document.getElementById("clientName").value,
+      email: document.getElementById("clientEmail").value,
+      details: document.getElementById("clientDetails").value,
+      serviceId,
+      serviceTitle,
+      servicePrice: parseFloat(servicePrice),
+      status: "pending",
+      customerId: finalCustomerId,
+      lastStepCompleted: "confirmation",
+      createdAt: Timestamp.fromDate(new Date())
+    };
+
+    try {
+      const orderRef = await addDoc(collection(db, "orders"), customerData);
+      statusMessage.textContent = `Order submitted! Your Customer ID: ${finalCustomerId}`;
+      customerFormSection.style.display = "none";
+      confirmOrderSection.style.display = "block";
+      customerIdInfo.textContent = `Your Customer ID: ${finalCustomerId}`;
+      confirmBtn.disabled = true;
+
+      onSnapshot(doc(db, "orders", orderRef.id), (docSnap) => {
+        if (docSnap.exists()) {
+          const orderData = docSnap.data();
+          if (orderData.status === "accepted") {
+            statusMessage.textContent = "Your order has been accepted! You can now proceed to payment.";
+            confirmBtn.disabled = false;
+            confirmBtn.textContent = "Proceed to Payment";
+            confirmBtn.onclick = () => {
+              // Update lastStepCompleted
+              updateDoc(doc(db, "orders", orderRef.id), { lastStepCompleted: "payment" });
+              window.location.href = `customer.html?customerId=${finalCustomerId}&step=payment`;
+            };
+          }
+        }
+      });
+    } catch (err) {
+      console.error("Error submitting order:", err);
+      statusMessage.textContent = "Failed to submit order. Try again.";
+    }
+  });
+
+  paymentBtn.addEventListener("click", () => {
+    alert("Payment processing would be implemented here.");
+  });
+  </script>
+</body>
+</html>
